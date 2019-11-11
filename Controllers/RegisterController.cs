@@ -41,13 +41,17 @@ namespace HarmonicaTabs.Controllers
                         {
                             try
                             {
-                                openConnection();
+                                //string sql = "Name:{0} {1}, Location:{2}, Age:{3}";
+                                //string msg = string.Format(s, "Suresh", "Dasari", "Hyderabad", 32);
+
+                                openConnection(); string s = "Name:{0} {1}, Location:{2}, Age:{3}";
+                                
                                 MySqlCommand cmd = new MySqlCommand();
                                 cmd.Connection = connection;
-                                cmd.CommandText = "SELECT * FROM test";
-                                MySqlDataReader reader = cmd.ExecuteReader();
-                                reader.Read();
-                                reader.Close();
+                                cmd.CommandText = string.Format("INSERT INTO logins (uuid,email,username,password) " +
+                                    "                            VALUES ('{0}', '{1}', '{2}', '{3}')"
+                                                                        ,"test",email, username, password);
+                                cmd.ExecuteNonQuery();
                                 closeConnection();
                             } catch (MySqlException e)
                             {
