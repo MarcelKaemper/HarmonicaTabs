@@ -8,7 +8,7 @@
     <link href="@Url.Content("~/Content/register.css")" rel="stylesheet" type="text/css" />
 }
 
-<h2>Register</h2>
+<h2 class="text-center">Register</h2>
 <div style="text-align:center;">
     <form method="post" action="">
         <div class="formDiv">
@@ -34,5 +34,11 @@
             <input type="submit" name="submit" value="Register" />
         </div>
     </form>
+    @if (!string.IsNullOrEmpty(Model.error))
+    {
+        <div class="error">
+            Error: @Model.error
+        </div>
+    }
 </div>
 

@@ -3,5 +3,15 @@
 }
 
 .formDiv {
+    margin-top: 20px;
     display: inline-block;
+}
+
+.error {
+    padding: 10px;
+    margin: 20px;
+    background-color: lightgrey;
+    border: 2px solid red;
+
+    color: black;
 }
