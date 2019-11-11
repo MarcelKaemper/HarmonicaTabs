@@ -1,8 +1,8 @@
 ﻿using System.Web.Mvc;
 using HarmonicaTabs.Models;
-
 using System.Configuration;
 using MySql.Data.MySqlClient;
+using System;
 
 namespace HarmonicaTabs.Controllers
 {
@@ -44,13 +44,13 @@ namespace HarmonicaTabs.Controllers
                                 //string sql = "Name:{0} {1}, Location:{2}, Age:{3}";
                                 //string msg = string.Format(s, "Suresh", "Dasari", "Hyderabad", 32);
 
-                                openConnection(); string s = "Name:{0} {1}, Location:{2}, Age:{3}";
+                                openConnection();
                                 
                                 MySqlCommand cmd = new MySqlCommand();
                                 cmd.Connection = connection;
                                 cmd.CommandText = string.Format("INSERT INTO logins (uuid,email,username,password) " +
                                     "                            VALUES ('{0}', '{1}', '{2}', '{3}')"
-                                                                        ,"test",email, username, password);
+                                                                        ,generateUUID(),email, username, password);
                                 cmd.ExecuteNonQuery();
                                 closeConnection();
                             } catch (MySqlException e)
@@ -76,6 +76,31 @@ namespace HarmonicaTabs.Controllers
         private void closeConnection()
         {
             connection.Close();
+        }
+
+        private string generateUUID()
+        {
+            string uuid = "";
+            Random random = new Random();
+
+            while(uuid.Length < 16) {
+                int rand = random.Next(0, 3);
+                if (rand == 0)
+                {
+                    uuid += random.Next(0, 10);
+                } else if (rand == 1)
+                {
+                    uuid += (char)('a' + random.Next(0, 26));
+                } else
+                {
+                    if (random.Next(0, 4) == 0)
+                    {
+                        int r = random.Next(0, 3);
+                        uuid += (r == 0) ? "!" : (r == 1) ? "?" : "_";
+                    }
+                }
+            }
+            return uuid;
         }
     }
 }
