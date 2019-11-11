@@ -10,14 +10,13 @@ namespace HarmonicaTabs.Controllers
     {
 
         private MySqlConnection connection;
+        private string errorMsg = "";
 
         // GET: Register
         [HttpGet]
         public ActionResult Index()
         {
-            var register = new Register();
-
-            return View(register);
+            return View(new Register());
         }
 
         [HttpPost]
@@ -41,30 +40,34 @@ namespace HarmonicaTabs.Controllers
                         {
                             try
                             {
-                                //string sql = "Name:{0} {1}, Location:{2}, Age:{3}";
-                                //string msg = string.Format(s, "Suresh", "Dasari", "Hyderabad", 32);
-
                                 openConnection();
                                 
                                 MySqlCommand cmd = new MySqlCommand();
                                 cmd.Connection = connection;
-                                cmd.CommandText = string.Format("INSERT INTO logins (uuid,email,username,password) " +
-                                    "                            VALUES ('{0}', '{1}', '{2}', '{3}')"
-                                                                        ,generateUUID(),email, username, password);
+                                string sql = "INSERT INTO logins (uuid,email,username,password) VALUES ('{0}', '{1}', '{2}', '{3}')";
+                                cmd.CommandText = string.Format(sql, generateUUID(),email, username, password);
                                 cmd.ExecuteNonQuery();
                                 closeConnection();
                             } catch (MySqlException e)
                             {
-                                System.Diagnostics.Debug.WriteLine(e.ToString());
+                                errorMsg = e.Message;
                             }
+                        } else
+                        {
+                            errorMsg = "Username must be at least 4 characters long";
                         }
                     }
+                    else
+                    {
+                        errorMsg = "Passwords do not match";
+                    }
+                } else
+                {
+                    errorMsg = "Password must be at least 8 characters long";
                 }
             }
-
-            var register = new Register();
             
-            return View(register);
+            return View(new Register() { error=errorMsg});
         }
 
         private void openConnection()
