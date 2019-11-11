@@ -7,5 +7,6 @@ namespace HarmonicaTabs.Models
 {
     public class Register
     {
+        public string error { get; set; }
     }
 }
