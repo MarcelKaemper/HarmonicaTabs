@@ -13,7 +13,7 @@ namespace HarmonicaTabs.Controllers
 
         // GET: Register
         [HttpGet]
-        public ActionResult Register()
+        public ActionResult Index()
         {
             var register = new Register();
 
@@ -21,23 +21,43 @@ namespace HarmonicaTabs.Controllers
         }
 
         [HttpPost]
-        public ActionResult Register(string username, string email, string password, string confirmPassword)
+        public ActionResult Index(string username, string email, string password, string confirmPassword)
         {
-            try
+
+            // If all fields filled out
+            if(!username.Equals("") &&
+               !email.Equals("") &&
+               !password.Equals("") &&
+               !confirmPassword.Equals("")) 
             {
-                openConnection();
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = connection;
-                cmd.CommandText = "SELECT * FROM test";
-                MySqlDataReader reader = cmd.ExecuteReader();
-                reader.Read();
-                System.Diagnostics.Debug.WriteLine(reader.GetString(0));
-                reader.Close();
-            } catch (MySqlException e)
-            {
-                System.Diagnostics.Debug.WriteLine(e.ToString());
+                // Password has at least 8 characters
+                if(password.Length >= 8)
+                {
+                    // Passwords are equal
+                    if (password.Equals(confirmPassword))
+                    {
+                        // Username length greater or equal to 4
+                        if(username.Length >= 4)
+                        {
+                            try
+                            {
+                                openConnection();
+                                MySqlCommand cmd = new MySqlCommand();
+                                cmd.Connection = connection;
+                                cmd.CommandText = "SELECT * FROM test";
+                                MySqlDataReader reader = cmd.ExecuteReader();
+                                reader.Read();
+                                reader.Close();
+                                closeConnection();
+                            } catch (MySqlException e)
+                            {
+                                System.Diagnostics.Debug.WriteLine(e.ToString());
+                            }
+                        }
+                    }
+                }
             }
-            
+
             var register = new Register();
             
             return View(register);
