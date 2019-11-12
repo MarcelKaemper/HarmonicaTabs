@@ -41,12 +41,13 @@ namespace HarmonicaTabs.Controllers
                             try
                             {
                                 openConnection();
-                                
+
                                 MySqlCommand cmd = new MySqlCommand();
                                 cmd.Connection = connection;
                                 string sql = "INSERT INTO logins (uuid,email,username,password) VALUES ('{0}', '{1}', '{2}', '{3}')";
-                                cmd.CommandText = string.Format(sql, generateUUID(),email, username, password);
+                                cmd.CommandText = string.Format(sql, generateUUID(), email, username, BCrypt.Net.BCrypt.HashPassword(password, 10));
                                 cmd.ExecuteNonQuery();
+                                
                                 closeConnection();
                             } catch (MySqlException e)
                             {
@@ -54,7 +55,7 @@ namespace HarmonicaTabs.Controllers
                             }
                         } else
                         {
-                            errorMsg = "Username must be at least 4 characters long";
+                            errorMsg = "Username mustBCrypt.Net.BCrypt.HashPassword be at least 4 characters long";
                         }
                     }
                     else
