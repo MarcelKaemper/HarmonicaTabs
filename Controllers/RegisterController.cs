@@ -3,13 +3,14 @@ using HarmonicaTabs.Models;
 using System.Configuration;
 using MySql.Data.MySqlClient;
 using System;
+using HarmonicaTabs.Helpers;
 
 namespace HarmonicaTabs.Controllers
 {
     public class RegisterController : Controller
     {
 
-        private MySqlConnection connection;
+        private DatabaseConnector dbcon = new DatabaseConnector();
         private string errorMsg = "";
 
         // GET: Register
@@ -40,15 +41,15 @@ namespace HarmonicaTabs.Controllers
                         {
                             try
                             {
-                                openConnection();
+                                dbcon.openConnection();
 
                                 MySqlCommand cmd = new MySqlCommand();
-                                cmd.Connection = connection;
+                                cmd.Connection = dbcon.connection;
                                 string sql = "INSERT INTO logins (uuid,email,username,password) VALUES ('{0}', '{1}', '{2}', '{3}')";
                                 cmd.CommandText = string.Format(sql, generateUUID(), email, username, BCrypt.Net.BCrypt.HashPassword(password, 10));
                                 cmd.ExecuteNonQuery();
                                 
-                                closeConnection();
+                                dbcon.closeConnection();
                             } catch (MySqlException e)
                             {
                                 errorMsg = e.Message;
@@ -69,17 +70,6 @@ namespace HarmonicaTabs.Controllers
             }
             
             return View(new Register() { error=errorMsg});
-        }
-
-        private void openConnection()
-        {
-            connection = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySQLConnection"].ConnectionString);
-            connection.Open();
-        }
-
-        private void closeConnection()
-        {
-            connection.Close();
         }
 
         private string generateUUID()

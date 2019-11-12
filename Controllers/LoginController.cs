@@ -6,14 +6,15 @@ using System.Web;
 using System.Web.Mvc;
 using HarmonicaTabs.Models;
 using MySql.Data.MySqlClient;
+using HarmonicaTabs.Helpers;
 
 namespace HarmonicaTabs.Controllers
 {
     public class LoginController : Controller
     {
 
-        private MySqlConnection connection;
         private string errorMsg;
+        private DatabaseConnector dbcon = new DatabaseConnector();
 
         // GET: Login
         public ActionResult Index()
@@ -29,15 +30,13 @@ namespace HarmonicaTabs.Controllers
 
             try
             {
-                openConnection();
+                dbcon.openConnection();
 
                 MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = connection;
-                //cmd.CommandText = string.Format(sql, generateUUID(), email, username, BCrypt.Net.BCrypt.HashPassword(password, 10));
+                cmd.Connection = dbcon.connection;
                 cmd.CommandText = string.Format("SELECT password FROM logins WHERE {0}='" + login + "';", loginType);
 
-                MySqlDataReader reader;
-                reader = cmd.ExecuteReader();
+                MySqlDataReader reader = cmd.ExecuteReader();
 
                 reader.Read();
                 if (BCrypt.Net.BCrypt.Verify(password, reader.GetString(0)))
@@ -49,7 +48,7 @@ namespace HarmonicaTabs.Controllers
                     errorMsg = "Login failed";
                 }
 
-                closeConnection();
+                dbcon.closeConnection();
             }
             catch (MySqlException e)
             {
@@ -57,16 +56,6 @@ namespace HarmonicaTabs.Controllers
             }
 
             return View(new Login() { error = errorMsg });
-        }
-        private void openConnection()
-        {
-            connection = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySQLConnection"].ConnectionString);
-            connection.Open();
-        }
-
-        private void closeConnection()
-        {
-            connection.Close();
         }
     }
 }
